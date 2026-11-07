@@ -129,17 +129,30 @@ export const getMe = async (req, res) => {
 // @route   PUT /api/auth/update-profile
 export const updateProfile = async (req, res) => {
   try {
-    const fieldsToUpdate = {
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      avatar: req.body.avatar
-    };
+    const fieldsToUpdate = Object.fromEntries(
+      Object.entries({
+        name: req.body.name,
+        email: req.body.email?.toLowerCase(),
+        phone: req.body.phone,
+        avatar: req.body.avatar
+      }).filter(([, value]) => value !== undefined)
+    );
 
-    let user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+    if (!fieldsToUpdate.name || !fieldsToUpdate.email) {
+      return res.status(400).json({ success: false, message: 'Name and email are required.' });
+    }
+
+    const duplicateUser = await User.findOne({ email: fieldsToUpdate.email, _id: { $ne: req.user.id } });
+    if (duplicateUser) {
+      return res.status(400).json({ success: false, message: 'This email address is already in use.' });
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
       new: true,
       runValidators: true
     });
+
+    if (!user) return res.status(404).json({ success: false, message: 'User record not found.' });
 
     res.json({ success: true, user });
   } catch (error) {
@@ -184,15 +197,15 @@ export const forgotPassword = async (req, res) => {
     const resetToken = user.getResetPasswordToken();
     await user.save({ validateBeforeSave: false });
 
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3001';
+    const clientUrl = (process.env.CLIENT_URL || 'http://localhost:3000').trim().replace(/\/+$/, '');
     const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
-    const message = `You requested a password reset for your Aura Enterprise School Management System account. Please click the link below to set a new password:\n\n${resetUrl}\n\nThis link expires in 10 minutes.\n\nBest regards,\nAura Enterprise ERP Security Team`;
+    const message = `You requested a password reset for your IlmSaathi School ERP account. Please click the link below to set a new password:\n\n${resetUrl}\n\nThis link expires in 10 minutes.\n\nBest regards,\nIlmSaathi School ERP Team`;
     const html = generateResetPasswordEmailTemplate(user.name, resetUrl);
 
     try {
       await sendEmail({
         email: user.email,
-        subject: 'Aura Enterprise SMS Password Reset Instructions',
+        subject: 'IlmSaathi Password Reset Instructions',
         message,
         html
       });

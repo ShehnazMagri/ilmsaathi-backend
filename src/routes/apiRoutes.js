@@ -1,72 +1,66 @@
 import express from 'express';
+import { ModuleRecord } from '../models/ModuleRecord.js';
 
 export const router = express.Router();
 
-// Real-time memory stores initialized empty (NO static seed data)
-let CLASSES = [];
-let SUBJECTS = [];
-let ATTENDANCE = [];
-let HOMEWORK = [];
-let EXAMS = [];
-let RESULTS = [];
-let FEES = [];
-let PAYROLL = [];
-let BOOKS = [];
-let HOSTELS = [];
-let TRANSPORT = [];
-let INVENTORY = [];
-let NOTICES = [];
-let EVENTS = [];
+const formatRecord = record => ({ ...record.data, id: record._id.toString() });
 
-// Helper to create GET, POST, PUT, DELETE routes for secondary modules
-const createCrudRoutes = (path, store) => {
-  router.get(path, (req, res) => {
-    const activeItems = store.filter(item => item.status !== 'Deleted');
-    res.json({ success: true, count: activeItems.length, data: activeItems });
+// Persistent MongoDB CRUD for the secondary ERP modules.
+const createCrudRoutes = (path, module) => {
+  router.get(path, async (req, res, next) => {
+    try {
+      const records = await ModuleRecord.find({ module, deleted: false }).sort({ createdAt: -1 });
+      res.json({ success: true, count: records.length, data: records.map(formatRecord) });
+    } catch (error) { next(error); }
   });
 
-  router.post(path, (req, res) => {
-    const newItem = { id: `item-${Date.now()}`, status: 'Active', ...req.body, createdAt: new Date().toISOString() };
-    store.unshift(newItem);
-    res.status(201).json({ success: true, data: newItem });
+  router.post(path, async (req, res, next) => {
+    try {
+      const record = await ModuleRecord.create({ module, data: req.body });
+      res.status(201).json({ success: true, data: formatRecord(record) });
+    } catch (error) { next(error); }
   });
 
-  router.put(`${path}/:id`, (req, res) => {
-    const index = store.findIndex(item => item.id === req.params.id);
-    if (index !== -1) {
-      store[index] = { ...store[index], ...req.body, updatedAt: new Date().toISOString() };
-      return res.json({ success: true, data: store[index] });
-    }
-    res.status(404).json({ success: false, message: 'Record not found' });
+  router.put(`${path}/:id`, async (req, res, next) => {
+    try {
+      const record = await ModuleRecord.findOneAndUpdate(
+        { _id: req.params.id, module, deleted: false },
+        { $set: { data: req.body } },
+        { new: true }
+      );
+      if (!record) return res.status(404).json({ success: false, message: 'Record not found' });
+      res.json({ success: true, data: formatRecord(record) });
+    } catch (error) { next(error); }
   });
 
-  router.delete(`${path}/:id`, (req, res) => {
-    const item = store.find(item => item.id === req.params.id);
-    if (item) {
-      item.status = 'Deleted';
-      return res.json({ success: true, message: 'Record status updated to Deleted successfully' });
-    }
-    res.status(404).json({ success: false, message: 'Record not found' });
+  router.delete(`${path}/:id`, async (req, res, next) => {
+    try {
+      const record = await ModuleRecord.findOneAndUpdate(
+        { _id: req.params.id, module, deleted: false }, { deleted: true }, { new: true }
+      );
+      if (!record) return res.status(404).json({ success: false, message: 'Record not found' });
+      res.json({ success: true, message: 'Record deleted successfully' });
+    } catch (error) { next(error); }
   });
 };
 
 // Register secondary module endpoints
-createCrudRoutes('/classes', CLASSES);
-createCrudRoutes('/subjects', SUBJECTS);
-createCrudRoutes('/attendance', ATTENDANCE);
-createCrudRoutes('/homework', HOMEWORK);
-createCrudRoutes('/exams', EXAMS);
-createCrudRoutes('/results', RESULTS);
-createCrudRoutes('/fees', FEES);
-createCrudRoutes('/payroll', PAYROLL);
-createCrudRoutes('/library', BOOKS);
-createCrudRoutes('/hostel', HOSTELS);
-createCrudRoutes('/transport', TRANSPORT);
-createCrudRoutes('/inventory', INVENTORY);
-createCrudRoutes('/notices', NOTICES);
-createCrudRoutes('/events', EVENTS);
+createCrudRoutes('/classes', 'classes');
+createCrudRoutes('/subjects', 'subjects');
+createCrudRoutes('/attendance', 'attendance');
+createCrudRoutes('/homework', 'homework');
+createCrudRoutes('/exams', 'exams');
+createCrudRoutes('/results', 'results');
+createCrudRoutes('/fees', 'fees');
+createCrudRoutes('/payroll', 'payroll');
+createCrudRoutes('/library', 'library');
+createCrudRoutes('/hostel', 'hostel');
+createCrudRoutes('/transport', 'transport');
+createCrudRoutes('/inventory', 'inventory');
+createCrudRoutes('/notices', 'notices');
+createCrudRoutes('/events', 'events');
 
 // Health check
 router.get('/health', (req, res) => {
-  res.json({ status: 'OK', system: 'Enterprise School Management System Backend', time: new Date().toISOString() });
+  res.json({ status: 'OK', system: 'IlmSaathi School ERP Backend', time: new Date().toISOString() });
 });

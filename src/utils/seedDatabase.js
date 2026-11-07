@@ -6,13 +6,13 @@ export const seedDatabaseIfEmpty = async () => {
     if (userCount === 0) {
       console.log('[Database Seed] Seeding initial Admin user account into MongoDB...');
       await User.create({
-        name: 'Enterprise School Admin',
-        email: 'admin@aurasms.edu',
+        name: 'IlmSaathi School Admin',
+        email: 'admin@ilmsaathi.edu',
         password: 'password123',
         role: 'admin',
         avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'
       });
-      console.log('[Database Seed] Admin account ready in MongoDB: admin@aurasms.edu');
+      console.log('[Database Seed] Admin account ready in MongoDB: admin@ilmsaathi.edu');
     }
   } catch (err) {
     console.error('[Database Seed Error]', err.message);

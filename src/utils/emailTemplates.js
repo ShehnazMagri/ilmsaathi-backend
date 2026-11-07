@@ -13,7 +13,7 @@ export const generateResetPasswordEmailTemplate = (userName, resetUrl) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reset Your Password - Aura Enterprise SMS</title>
+  <title>Reset Your Password - IlmSaathi School ERP</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #090d16; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e2e8f0;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #090d16; padding: 40px 10px;">
@@ -29,7 +29,7 @@ export const generateResetPasswordEmailTemplate = (userName, resetUrl) => {
                 <span style="font-size: 26px; line-height: 48px; color: #ffffff;">🔒</span>
               </div>
               <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
-                Aura Enterprise School ERP
+                IlmSaathi School ERP
               </h1>
               <p style="margin: 6px 0 0 0; font-size: 13px; color: #c7d2fe; font-weight: 500;">
                 Password Reset Instructions
@@ -44,7 +44,7 @@ export const generateResetPasswordEmailTemplate = (userName, resetUrl) => {
                 Hello ${displayName},
               </p>
               <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #94a3b8;">
-                We received a request to reset the password associated with your account on <strong style="color: #cbd5e1;">Aura Enterprise School Management System</strong>. Click the button below to create a new password:
+                We received a request to reset the password associated with your account on <strong style="color: #cbd5e1;">IlmSaathi School ERP</strong>. Click the button below to create a new password:
               </p>
 
               <!-- Call to Action Button -->
@@ -79,13 +79,13 @@ export const generateResetPasswordEmailTemplate = (userName, resetUrl) => {
           <tr>
             <td style="background-color: #090d16; border-top: 1px solid #1e293b; padding: 24px 32px; text-align: center;">
               <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #cbd5e1;">
-                Aura Enterprise ERP Team
+                IlmSaathi School ERP Team
               </p>
               <p style="margin: 0 0 12px 0; font-size: 11px; color: #64748b; line-height: 1.4;">
                 Empowering Educational Institutions with Next-Gen Digital Management
               </p>
               <p style="margin: 0; font-size: 10px; color: #475569;">
-                &copy; 2026 Aura Enterprise School Management System. All rights reserved.
+                &copy; 2026 IlmSaathi School ERP. All rights reserved.
               </p>
             </td>
           </tr>

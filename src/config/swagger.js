@@ -10,7 +10,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Enterprise School Management System (SMS) API',
+      title: 'IlmSaathi School ERP API',
       version: '1.0.0',
       description: 'Comprehensive REST API documentation for Student, Faculty, Employee, Attendance, Financials and Academic Management.'
     },
